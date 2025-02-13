@@ -38,17 +38,31 @@ if g:processing_doc_style == 'web'
 	let g:processing_doc_path="http://processing.org/reference"
 endif
 
-" Note - other functions for processing#docopen can be put here
-" for example, we could put open-browser in here
-if has("python")
-	function! processing#docopen(docuri)
-		python << ENDPY
-import webbrowser
-import vim
-webbrowser.open(vim.eval("a:docuri"))
-ENDPY
-	endfunction
-endif " deterime doc style
+" fn to open documentation in a web browser
+"
+" note: other functions for processing#docopen can be put here
+" note: if running on Linux (or other non Mac/Win), xdg-utils is required
+function! processing#docopen(docuri)
+  if has("mac") " Mac (duh)
+    execute "silent !open " . shellescape(a:docuri)
+  elseif has("win32") " Windows (both 32 and 64-bit)
+    echohl ErrorMsg
+    echo "Error opening documentation: Windows is not currently supported"
+    echohl None
+    " FIXME needs testing. absolutely no clue if this works lmfao
+    " execute "silent !cmd /c start " . shellescape(filepath, 1)
+  else " other os (mainly Linux but possibly other Unices if xdg-open is supported)
+    " note: requires that xdg-utils be installed.
+    " not sure if there's a better way to do this
+    if executable("xdg-open")
+      execute "silent !xdg-open " . shellescape(a:docuri)
+    else
+      echohl ErrorMsg
+      echo "Error opening documentation: 'xdg-open' not found"
+      echohl None
+    endif
+  endif
+endfunction
 
 if exists("*processing#docopen")
 	function! ProcessingDoc()

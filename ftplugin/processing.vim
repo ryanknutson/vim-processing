@@ -46,12 +46,7 @@ function! processing#docopen(docuri)
   if has("mac") " Mac (duh)
     execute "silent !open " . shellescape(a:docuri)
   elseif has("win32") " Windows (both 32 and 64-bit)
-    echohl ErrorMsg
-    echo "Error opening documentation: Windows is not currently supported"
-    echohl None
-    " FIXME needs testing. absolutely no clue if this works lmfao
-    " execute "silent !cmd /c start " . shellescape(filepath, 1)
-    execute "silent !start \"\"" . shellescape(a:docuri)
+    execute "silent !start \"\" " . shellescape(a:docuri)
   else " other os (mainly Linux but possibly other Unices if xdg-open is supported)
     " note: requires that xdg-utils be installed.
     " not sure if there's a better way to do this
